@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  coresync-postgres:
+    image: postgres:15-alpine
+    container_name: coresync-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: engine_admin
+      POSTGRES_PASSWORD: engine_secure_password
+      POSTGRES_DB: coresync_db
+    volumes:
+      - coresync_data:/var/lib/postgresql/data
+
+volumes:
+  coresync_data:
