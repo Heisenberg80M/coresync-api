@@ -26,5 +26,5 @@ Ensure you have [Docker](https://www.docker.com/) and [Node.js](https://nodejs.o
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/YOUR_GITHUB_USERNAME/coresync-api.git](https://github.com/YOUR_GITHUB_USERNAME/coresync-api.git)
+   git clone [https://github.com/Heisenberg80M/coresync-api.git](https://github.com/Heisenberg80M/coresync-api.git)
    cd coresync-api

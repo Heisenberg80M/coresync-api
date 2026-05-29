@@ -1,33 +1,34 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import authRoutes from './routes/auth.routes';
+import { isAuthenticatedGuard } from './middleware/auth.guard';
 
-export const isAuthenticatedGuard = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  try {
-    const authHeader = req.headers.authorization;
+dotenv.config();
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({ 
-        success: false, 
-        message: 'Access Denied. Authorization header missing or malformed.' 
-      });
-      return;
-    }
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    
-    // Attach user information directly to the request flow
-    req.user = decoded;
-    
-    next();
-  } catch (error) {
-    res.status(401).json({ 
-      success: false, 
-      message: 'Authentication failed. Invalid token session.' 
-    });
-  }
-};
+app.use(cors());
+app.use(express.json());
+
+// 1. Core Authentication Endpoint Mount
+app.use('/api/v1/auth', authRoutes);
+
+// 2. Monitoring Health-check endpoint (Public)
+app.get('/api/v1/health', (req, res) => {
+  res.status(200).json({ status: 'operational', system: 'CoreSync Engine' });
+});
+
+// 3. Guarded Sandbox Endpoint (Requires Authorization header token)
+app.get('/api/v1/secure-data', isAuthenticatedGuard, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Data successfully retrieved from guarded system endpoint.',
+    identityContext: req.user, // Unpacked metadata cleanly extracted by guard middleware
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`📡 CoreSync Standalone Server running on port ${PORT}`);
+});
