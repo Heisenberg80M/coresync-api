@@ -2,31 +2,25 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
-import { isAuthenticatedGuard } from './middleware/auth.guard';
+import syncRoutes from './routes/sync.routes';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// 1. CORE INTERCEPTORS (Must run before ALL sub-routers)
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // <-- Parses JSON strings into JavaScript objects (req.body)
+app.use(express.urlencoded({ extended: true })); // <-- Handles URL-encoded payloads safely
 
-// 1. Core Authentication Endpoint Mount
+// 2. SUBSYSTEM ROUTERS
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/sync', syncRoutes);
 
-// 2. Monitoring Health-check endpoint (Public)
+// 3. MONITORING CHECK
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({ status: 'operational', system: 'CoreSync Engine' });
-});
-
-// 3. Guarded Sandbox Endpoint (Requires Authorization header token)
-app.get('/api/v1/secure-data', isAuthenticatedGuard, (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Data successfully retrieved from guarded system endpoint.',
-    identityContext: req.user, // Unpacked metadata cleanly extracted by guard middleware
-  });
 });
 
 app.listen(PORT, () => {

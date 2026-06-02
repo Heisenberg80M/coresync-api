@@ -1,6 +1,5 @@
 datasource db {
   provider = "postgresql"
-  
 }
 
 generator client {
@@ -8,12 +7,26 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String    @id @default(uuid())
+  email     String    @unique
   password  String
   firstName String?
   lastName  String?
-  role      String   @default("USER")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      String    @default("USER")
+  products  Product[] // Relational link: One user can have many synchronized products
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  sku         String   @unique // Stock Keeping Unit (Enterprise standard)
+  name        String
+  description String?
+  price       Float
+  inventory   Int      @default(0)
+  userId      String   // Foreign key linking to the User model
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
