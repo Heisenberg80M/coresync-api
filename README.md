@@ -36,7 +36,8 @@ Ensure you have the following systems active on your machine:
 ```bash
 git clone [https://github.com/Heisenberg80M/coresync-api.git](https://github.com/Heisenberg80M/coresync-api.git)
 cd coresync-api
-npm install
+npm install 
+```
 
 
 ### 3. Spin Up Infrastructure & Generate Client Tables
@@ -44,6 +45,32 @@ npm install
 docker-compose up -d # Start the PostgreSQL database container
 npx prisma migrate dev --name init_system_schemas # Run migrations to the Prisma Client binaries
 npx prisma generate  # Sync the Prisma Client binaries
+```
 
 ### 4. Start the Development Server
+```bash
 npm run dev
+```
+
+---
+
+## 📡 Core API Gateway Specifications
+All core data endpoints require a valid access token sent inside the header structure:
+`Authorization: Bearer <your_jwt_token>`
+
+---
+
+## 🔑 Authentication Services
+- `POST /api/v1/auth/register` - Instantiate a new system manager profile.
+- `POST /api/v1/auth/login` - Authenticate and fetch a temporary session key.
+
+---
+
+## 🔄 Multi-Tenant Sync Services (Protected)
+- `POST /api/v1/sync/products` - Sync a product line. Updates existing records via SKU mapping or creates a new entry if none exist.
+- `GET /api/v1/sync/products` - Pull all synchronized catalog arrays belonging only to your active session profile.
+
+---
+
+## ☁️ Cloud Asset Services (Protected)
+- `POST /api/v1/storage/presign` - Request a secure, pre-signed AWS S3 asset upload gateway link for high-speed file storage (filename and fileType required).
