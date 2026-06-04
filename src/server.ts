@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import syncRoutes from './routes/sync.routes';
+import storageRoutes from './routes/storage.routes'; // Import storage routing
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true })); // <-- Handles URL-encoded payl
 // 2. SUBSYSTEM ROUTERS
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/sync', syncRoutes);
+app.use('/api/v1/storage', storageRoutes); // Mount the cloud storage router
 
 // 3. MONITORING CHECK
 app.get('/api/v1/health', (req, res) => {
